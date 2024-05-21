@@ -3,10 +3,11 @@ import 'package:http/http.dart' as http;
 
 class GetConsultingRequestService {
   static const String apiUrl =
-      'https://yosefsahle.gospelinacts.org/api/getconsultingrequestes/'; // Replace with your actual API URL
+      'https://yosefsahle.gospelinacts.org/api/getconsultingrequestes/index.php'; // Replace with your actual API URL
 
-  Future<List<Map<String, dynamic>>> getPermissionRequests() async {
-    final url = Uri.parse(apiUrl);
+  Future<List<Map<String, dynamic>>> getPermissionRequests(
+      String consultingType) async {
+    final url = Uri.parse('$apiUrl?consultingType=$consultingType');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {

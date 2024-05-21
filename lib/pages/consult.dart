@@ -18,6 +18,7 @@ class _ConsultState extends State<Consult> {
   String? availableDatesSelect;
   bool isLoading = true;
   bool isSubmitting = false;
+  bool _isOnChange = false;
   late bool onreview;
   late String userId;
 
@@ -48,9 +49,12 @@ class _ConsultState extends State<Consult> {
         availableDates = times;
         availableDatesSelect = availableDates[0];
         isLoading = false;
+        _isOnChange = false;
       });
     } catch (e) {
-      print('Error Unknown');
+      setState(() {
+        _isOnChange = false;
+      });
     }
   }
 
@@ -160,6 +164,7 @@ class _ConsultState extends State<Consult> {
                                   onChanged: (String? newValue) {
                                     setState(() {
                                       consultingTypesSelect = newValue;
+                                      _isOnChange = true;
                                       availableDatesSelect = null;
                                       featchSchduleTime(newValue.toString());
                                     });
@@ -169,39 +174,45 @@ class _ConsultState extends State<Consult> {
                             ),
                           ),
                           const SizedBox(height: 20),
-                          Padding(
-                            padding: const EdgeInsets.all(2),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'Available Dates:',
-                                  style: TextStyle(
-                                      fontSize: screenSize.width * 0.03),
-                                ),
-                                const SizedBox(width: 5),
-                                DropdownButton<String>(
-                                  value: availableDatesSelect,
-                                  items: availableDates.map((String item) {
-                                    return DropdownMenuItem<String>(
-                                      value: item,
-                                      child: Text(
-                                        item,
+                          _isOnChange
+                              ? Center(
+                                  child: CircularProgressIndicator(),
+                                )
+                              : Padding(
+                                  padding: const EdgeInsets.all(2),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        'Available Dates:',
                                         style: TextStyle(
-                                          fontSize: screenSize.width * 0.035,
-                                        ),
+                                            fontSize: screenSize.width * 0.03),
                                       ),
-                                    );
-                                  }).toList(),
-                                  onChanged: (String? newValue) {
-                                    setState(() {
-                                      availableDatesSelect = newValue;
-                                    });
-                                  },
+                                      const SizedBox(width: 5),
+                                      DropdownButton<String>(
+                                        value: availableDatesSelect,
+                                        items:
+                                            availableDates.map((String item) {
+                                          return DropdownMenuItem<String>(
+                                            value: item,
+                                            child: Text(
+                                              item,
+                                              style: TextStyle(
+                                                fontSize:
+                                                    screenSize.width * 0.035,
+                                              ),
+                                            ),
+                                          );
+                                        }).toList(),
+                                        onChanged: (String? newValue) {
+                                          setState(() {
+                                            availableDatesSelect = newValue;
+                                          });
+                                        },
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ],
-                            ),
-                          ),
                           const SizedBox(height: 10),
                           Visibility(
                             visible: availableDates.isEmpty,

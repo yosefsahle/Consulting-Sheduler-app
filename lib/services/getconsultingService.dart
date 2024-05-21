@@ -10,6 +10,10 @@ class GetConsultingService {
       'https://yosefsahle.gospelinacts.org/api/addschedule/';
   final String markascontactedApiUrl =
       'https://yosefsahle.gospelinacts.org/api/markascontacted/';
+  final String addconsultingtypeUrl =
+      'https://yosefsahle.gospelinacts.org/api/addconsultingtype/';
+  final String deletconsultingtypeapi =
+      'https://yosefsahle.gospelinacts.org/api/deletconsultingtype/index.php';
 
   Future<List<String>> fetchConsultingType() async {
     final response = await http.get(Uri.parse(apiUrl));
@@ -22,8 +26,46 @@ class GetConsultingService {
     }
   }
 
+  Future<bool> addConsultingType(String type) async {
+    final response = await http.post(
+      Uri.parse(addconsultingtypeUrl),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'type': type,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future<bool> deleteConsultingType(String type) async {
+    final response = await http.post(
+      Uri.parse(deletconsultingtypeapi),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'type': type,
+      }),
+    );
+
+    print(response.statusCode);
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   Future<List<String>> fetchAvailableConsultingDates(
       String scheduleType) async {
+    print(scheduleType);
     try {
       final response = await http
           .get(Uri.parse('$avilabelTimeUrl?scheduleType=$scheduleType'));

@@ -12,6 +12,8 @@ class ConsultingType extends StatefulWidget {
 class _ConsultingTypeState extends State<ConsultingType> {
   late List<String> consultingType;
   bool _isLoading = true;
+  final TextEditingController _typeController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -26,7 +28,39 @@ class _ConsultingTypeState extends State<ConsultingType> {
         consultingType = types;
         _isLoading = false;
       });
-    } catch (e) {}
+    } catch (e) {
+      // Handle error
+    }
+  }
+
+  Future<void> addConsultingType() async {
+    if (_formKey.currentState?.validate() ?? false) {
+      try {
+        bool sucess = await GetConsultingService()
+            .addConsultingType(_typeController.text);
+        if (sucess) {
+          setState(() {
+            fetchScheduleTypes();
+            _isLoading = false;
+          });
+        } else {
+          _isLoading = false;
+        }
+      } catch (e) {
+        // Handle error
+      }
+    }
+  }
+
+  Future<void> deleteConsultingType(int index, String type) async {
+    try {
+      await GetConsultingService().deleteConsultingType(type);
+      setState(() {
+        consultingType.removeAt(index);
+      });
+    } catch (e) {
+      // Handle error
+    }
   }
 
   @override
@@ -43,42 +77,51 @@ class _ConsultingTypeState extends State<ConsultingType> {
             SizedBox(
               height: 20,
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                SizedBox(
-                  width: screensize.width * 0.7,
-                  height: 50,
-                  child: TextFormField(
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      label: Text('Consulting Type'),
-                      hintText: 'Consulting Type',
+            Form(
+              key: _formKey,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  SizedBox(
+                    width: screensize.width * 0.7,
+                    height: 50,
+                    child: TextFormField(
+                      controller: _typeController,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        label: Text('Consulting Type'),
+                        hintText: 'Consulting Type',
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please input a valid Type';
+                        }
+                        return null;
+                      },
                     ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your email or phone';
-                      }
-                      return null;
-                    },
                   ),
-                ),
-                Container(
-                  decoration: BoxDecoration(color: AppColors.primary),
-                  child: TextButton(
-                      onPressed: () {},
-                      child: Text(
-                        'Add',
-                        style: TextStyle(
-                          color: AppColors.secondary,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      )),
-                ),
-              ],
+                  Container(
+                    decoration: BoxDecoration(color: AppColors.primary),
+                    child: TextButton(
+                        onPressed: () {
+                          setState(() {
+                            _isLoading = true;
+                            addConsultingType();
+                          });
+                        },
+                        child: Text(
+                          'Add',
+                          style: TextStyle(
+                            color: AppColors.secondary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        )),
+                  ),
+                ],
+              ),
             ),
             _isLoading
-                ? Center(
+                ? const Center(
                     child: LinearProgressIndicator(),
                   )
                 : Expanded(
@@ -99,7 +142,10 @@ class _ConsultingTypeState extends State<ConsultingType> {
                                       color: AppColors.primary),
                                 ),
                                 IconButton(
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      deleteConsultingType(
+                                          index, consultingType[index]);
+                                    },
                                     icon: Icon(
                                       Icons.delete,
                                       color: AppColors.error,
