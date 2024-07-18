@@ -1,0 +1,13 @@
+# Treat all files in lib/ as Dart
+lib/* linguist-language=Dart
+
+# Exclude CMake files from language stats
+CMakeLists.txt linguist-vendored
+*.cmake linguist-vendored
+
+# Exclude external dependencies from language stats
+ios/* linguist-vendored
+android/* linguist-vendored
+
+# Optionally, exclude build directories
+build/* linguist-vendored
