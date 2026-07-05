@@ -1,4 +1,4 @@
-# my_assignment
+# Shceduler App
 
 A new Flutter project.
 
