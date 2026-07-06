@@ -1,4 +1,4 @@
-# Consulting Shceduler App
+# Consulting Shceduler App Demo Only(Ui)
 
 A new Flutter project.
 
